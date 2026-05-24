@@ -7,6 +7,7 @@ export const translations = {
         { label: "About",    href: "#about"    },
         { label: "Skills",   href: "#skills"   },
         { label: "Projects", href: "#projects" },
+        { label: "Epitech",  href: "#epitech"  },
         { label: "Contact",  href: "#contact"  },
       ],
     },
@@ -68,6 +69,9 @@ export const translations = {
     footer: {
       builtWith: "Built with",
     },
+    loader: {
+      loading: "Loading...",
+    },
   },
 
   fr: {
@@ -76,6 +80,7 @@ export const translations = {
         { label: "À propos",    href: "#about"    },
         { label: "Compétences", href: "#skills"   },
         { label: "Projets",     href: "#projects" },
+        { label: "Epitech",     href: "#epitech"  },
         { label: "Contact",     href: "#contact"  },
       ],
     },
@@ -136,6 +141,9 @@ export const translations = {
     },
     footer: {
       builtWith: "Construit avec",
+    },
+    loader: {
+      loading: "Chargement...",
     },
   },
 } as const;
