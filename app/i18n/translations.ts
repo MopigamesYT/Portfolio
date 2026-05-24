@@ -25,7 +25,7 @@ export const translations = {
       bio: [
         "I am a second-year software engineering student at Epitech Marseille, with practical experience across the full stack-from systems programming in C to modern web development using TypeScript, React, and Next.js.",
         "I have contributed to open-source projects, implemented CI/CD pipelines with GitHub Actions, and completed internships in PHP development and hardware refurbishment. I learn independently and take pride in understanding how technology works at a fundamental level.",
-        "Outside of coding, I play piano, experiment with 3D printing, and practice urban parkour.",
+        "Outside of coding, I play piano, experiment with 3D printing, and practice urban parkour. I also have a passion for railways.",
       ],
       stats: [
         { label: "Years Experience"  },
@@ -98,7 +98,7 @@ export const translations = {
       bio: [
         "Je suis étudiante en deuxième année à Epitech Marseille, avec une expérience pratique sur toute la pile technique, de la programmation système en C au développement web moderne avec TypeScript, React et Next.js.",
         "J'ai contribué à des projets open source, mis en place des pipelines CI/CD avec GitHub Actions et effectué des stages en développement PHP et en reconditionnement matériel. J'apprends de manière autonome et m'attache à comprendre le fonctionnement fondamental des technologies.",
-        "En dehors du développement, je joue du piano, expérimente avec l'impression 3D et pratique le parkour urbain.",
+        "En dehors du développement, je joue du piano, expérimente avec l'impression 3D et pratique le parkour urbain. Je suis également passionnée par le ferroviaire.",
       ],
       stats: [
         { label: "Années d'expérience" },
