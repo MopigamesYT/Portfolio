@@ -4,7 +4,12 @@ services:
       context: .
       args:
         PORT: ${PORT:-3000}
-    env_file: .env
+    environment:
+      - PORT=${PORT:-3000}
+      - DISCORD_USER_ID=${DISCORD_USER_ID}
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - MOULIFY_TOKEN=${MOULIFY_TOKEN}
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
     restart: unless-stopped
