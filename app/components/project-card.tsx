@@ -27,12 +27,6 @@ export default function ProjectCard({
         }),
       }}
     >
-      {/* accent bar */}
-      <div
-        className="absolute inset-y-0 left-0 w-1 transition-all duration-300 group-hover:w-1.5"
-        style={{ background: `linear-gradient(180deg, ${accent}, ${accent}88)` }}
-      />
-
       <div className="flex flex-1 flex-col gap-4 p-6">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-lg font-semibold text-ctp-text">

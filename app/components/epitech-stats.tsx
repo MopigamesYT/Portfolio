@@ -59,12 +59,6 @@ function ResultCard({ result: r, t }: { result: MoulifyResult; t: Pick<T, "tests
         boxShadow:       `0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px ${color}22`,
       }}
     >
-      {/* Left accent bar */}
-      <div
-        className="absolute inset-y-0 left-0 w-1"
-        style={{ background: `linear-gradient(180deg, ${color}, ${color}88)` }}
-      />
-
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
