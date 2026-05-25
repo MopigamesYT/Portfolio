@@ -159,6 +159,7 @@ function SlideContent({ slide, status }: { slide: Slide; status: DiscordStatus }
           <div className="flex min-w-0 flex-col justify-center gap-0.5">
             <p className="truncate text-sm font-semibold" style={{ color: ctp.text }}>{game.name}</p>
             {game.details && <p className="truncate text-xs" style={{ color: ctp.subtext1 }}>{game.details}</p>}
+            {game.state && <p className="truncate text-xs" style={{ color: ctp.subtext1 }}>{game.state}</p>}
             {game.timestamps?.start != null && (
               <p className="text-xs" style={{ color: ctp.overlay1 }}>
                 <LiveElapsed start={game.timestamps.start} />
@@ -232,7 +233,7 @@ function DeckCard({ slides, status }: { slides: Slide[]; status: DiscordStatus }
   }, [slides.length]);
 
   return (
-    <div className="relative w-64" style={{ isolation: "isolate" }}>
+    <div className="relative w-74" style={{ isolation: "isolate" }}>
       <style>{KEYFRAMES}</style>
 
       {/* Back card — peeks behind the front card */}
