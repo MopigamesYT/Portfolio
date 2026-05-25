@@ -31,7 +31,7 @@ export default function Contact({ t }: Props) {
           <a
             href={`mailto:${portfolio.email}`}
             className="mt-12 inline-flex items-center gap-3 rounded-2xl px-8 py-4 text-base font-semibold transition-opacity hover:opacity-90"
-            style={{ backgroundColor: ctp.mauve, color: ctp.base }}
+            style={{ backgroundColor: ctp.pink, color: ctp.base }}
           >
             <MailIcon className="h-5 w-5" />
             {t.cta}

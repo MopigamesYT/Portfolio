@@ -13,7 +13,7 @@ export default function SectionHeading({
     <div className={`flex flex-col gap-3 ${centered ? "items-center text-center" : "items-start"}`}>
       <span
         className="text-xs font-semibold uppercase tracking-[0.2em]"
-        style={{ color: ctp.mauve }}
+        style={{ color: ctp.pink }}
       >
         {eyebrow}
       </span>

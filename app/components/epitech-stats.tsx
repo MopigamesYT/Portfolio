@@ -216,7 +216,7 @@ export default async function EpitechStats({ t }: { t: T }) {
 
         {/* Stats row */}
         <div className="mt-16 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard value={String(total)}  label={t.projectsDelivered} color={ctp.mauve} />
+          <StatCard value={String(total)}  label={t.projectsDelivered} color={ctp.pink} />
           {avgPct !== null && (
             <StatCard
               value={`${avgPct}%`}

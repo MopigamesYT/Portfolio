@@ -16,8 +16,8 @@ export const experienceStart = "2020-01-01";
 // Stat values and accent colors - labels are in translations.ts (in the same order)
 export const stats = [
   { value: "6+",  color: "#cba6f7" }, // mauve  - overridden dynamically from experienceStart
-  { value: "30+", color: "#89b4fa" }, // blue
-  { value: "10+", color: "#a6e3a1" }, // green
+  { value: "50+", color: "#89b4fa" }, // blue
+  { value: "50+", color: "#a6e3a1" }, // green
   { value: "∞",   color: "#fab387" }, // peach
 ] as const;
 

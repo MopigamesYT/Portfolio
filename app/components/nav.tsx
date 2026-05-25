@@ -33,7 +33,7 @@ export default async function Nav({ t, locale }: Props) {
           ) : (
             <span
               className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition-opacity group-hover:opacity-80"
-              style={{ backgroundColor: ctp.mauve, color: ctp.base }}
+              style={{ backgroundColor: ctp.pink, color: ctp.base }}
             >
               {portfolio.initials}
             </span>

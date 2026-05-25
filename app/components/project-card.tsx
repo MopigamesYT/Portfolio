@@ -12,7 +12,7 @@ export default function ProjectCard({
   index?:   number;
   animate?: boolean;
 }) {
-  const accent = repo.language?.color ?? ctp.mauve;
+  const accent = repo.language?.color ?? ctp.pink;
 
   return (
     <div

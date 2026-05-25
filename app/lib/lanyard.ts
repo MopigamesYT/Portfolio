@@ -19,7 +19,7 @@ function closestCtp(decimal: number): string {
   const r1 = (decimal >> 16) & 0xff;
   const g1 = (decimal >> 8)  & 0xff;
   const b1 =  decimal        & 0xff;
-  let best = ctp.mauve as string;
+  let best = ctp.pink as string;
   let min  = Infinity;
   for (const hex of ACCENT_PALETTE) {
     const r2 = parseInt(hex.slice(1, 3), 16);
@@ -39,7 +39,7 @@ const DEFAULTS: DiscordProfile = {
   avatar:     null,
   decoration: null,
   accent1:    ctp.maroon,
-  accent2:    ctp.mauve,
+  accent2:    ctp.pink,
 };
 
 export async function fetchDiscordProfile(): Promise<DiscordProfile> {

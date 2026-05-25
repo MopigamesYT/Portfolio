@@ -40,6 +40,10 @@ type LanyardPresence = {
   activities:           LanyardActivity[];
 };
 
+type Slide =
+  | { kind: "game";    activity: LanyardActivity }
+  | { kind: "spotify"; spotify:  LanyardSpotify   };
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 const STATUS_COLOR: Record<DiscordStatus, string> = {
@@ -86,19 +90,27 @@ function Dot({ status }: { status: DiscordStatus }) {
   );
 }
 
-function MiniSpotifyBar({ ts }: { ts: LanyardSpotify["timestamps"] }) {
+function SpotifyProgress({ ts }: { ts: LanyardSpotify["timestamps"] }) {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  const progress = Math.min(1, Math.max(0, (now - ts.start) / (ts.end - ts.start)));
+  const elapsed  = Math.max(0, now - ts.start);
+  const total    = ts.end - ts.start;
+  const progress = Math.min(1, elapsed / total);
   return (
-    <div className="h-0.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: ctp.surface1 }}>
-      <div
-        className="h-full rounded-full transition-[width] duration-1000 ease-linear"
-        style={{ width: `${progress * 100}%`, backgroundColor: ctp.green }}
-      />
+    <div className="flex flex-col gap-1">
+      <div className="h-1 w-full overflow-hidden rounded-full" style={{ backgroundColor: ctp.surface1 }}>
+        <div
+          className="h-full rounded-full transition-[width] duration-1000 ease-linear"
+          style={{ width: `${progress * 100}%`, backgroundColor: ctp.green }}
+        />
+      </div>
+      <div className="flex justify-between text-xs" style={{ color: ctp.overlay1 }}>
+        <span>{fmtMs(elapsed)}</span>
+        <span>{fmtMs(total)}</span>
+      </div>
     </div>
   );
 }
@@ -119,6 +131,159 @@ const CARD: React.CSSProperties = {
   border:          `1px solid ${ctp.surface1}`,
   backdropFilter:  "blur(12px)",
 };
+
+// ── Slide content ──────────────────────────────────────────────────────────
+
+function SlideContent({ slide, status }: { slide: Slide; status: DiscordStatus }) {
+  if (slide.kind === "game") {
+    const { activity: game } = slide;
+    const imgUrl = activityImgUrl(game);
+    return (
+      <>
+        <header className="mb-2.5 flex items-center gap-2">
+          <Dot status={status} />
+          <span className="text-xs font-semibold tracking-wide" style={{ color: STATUS_COLOR[status] }}>
+            Playing
+          </span>
+        </header>
+        <div className="flex gap-2.5">
+          {imgUrl ? (
+            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md lg:h-12 lg:w-12 lg:rounded-lg">
+              <Image src={imgUrl} alt={game.assets?.large_text ?? game.name} fill unoptimized className="object-cover" />
+            </div>
+          ) : (
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-lg lg:h-12 lg:w-12 lg:rounded-lg lg:text-xl" style={{ backgroundColor: ctp.surface0 }}>
+              🎮
+            </div>
+          )}
+          <div className="flex min-w-0 flex-col justify-center gap-0.5">
+            <p className="truncate text-sm font-semibold" style={{ color: ctp.text }}>{game.name}</p>
+            {game.details && <p className="truncate text-xs" style={{ color: ctp.subtext1 }}>{game.details}</p>}
+            {game.timestamps?.start != null && (
+              <p className="text-xs" style={{ color: ctp.overlay1 }}>
+                <LiveElapsed start={game.timestamps.start} />
+              </p>
+            )}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const { spotify } = slide;
+  return (
+    <>
+      <header className="mb-2.5 flex items-center gap-2">
+        <Dot status={status} />
+        <span className="text-xs font-semibold tracking-wide" style={{ color: STATUS_COLOR[status] }}>
+          Listening to Spotify
+        </span>
+      </header>
+      <div className="flex gap-2.5">
+        <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md lg:h-12 lg:w-12 lg:rounded-lg">
+          <Image src={spotify.album_art_url} alt={spotify.album} fill unoptimized className="object-cover" />
+        </div>
+        <div className="flex min-w-0 flex-col justify-center gap-0.5">
+          <p className="truncate text-sm font-semibold" style={{ color: ctp.text }}>{spotify.song}</p>
+          <p className="truncate text-xs" style={{ color: ctp.subtext1 }}>{spotify.artist}</p>
+        </div>
+      </div>
+      <SpotifyProgress ts={spotify.timestamps} />
+    </>
+  );
+}
+
+// ── Deck (cycling card stack) ──────────────────────────────────────────────
+
+const KEYFRAMES = `
+  @keyframes card-leave {
+    from { transform: none; opacity: 1; }
+    to   { transform: translateY(10px) scale(0.94); opacity: 0; }
+  }
+  @keyframes card-enter {
+    from { transform: translateY(-10px) scale(0.97); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+  }
+`;
+
+function DeckCard({ slides, status }: { slides: Slide[]; status: DiscordStatus }) {
+  const [idx, setIdx]         = useState(0);
+  const [exitIdx, setExitIdx] = useState<number | null>(null);
+  const idxRef      = useRef(idx);
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  idxRef.current = idx;
+
+  const safeIdx = idx % slides.length;
+  const backIdx = (safeIdx + 1) % slides.length;
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const id = setInterval(() => {
+      const cur = idxRef.current % slides.length;
+      setExitIdx(cur);
+      setIdx((cur + 1) % slides.length);
+      if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
+      exitTimerRef.current = setTimeout(() => setExitIdx(null), 520);
+    }, 5000);
+    return () => {
+      clearInterval(id);
+      if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
+    };
+  }, [slides.length]);
+
+  return (
+    <div className="relative w-64" style={{ isolation: "isolate" }}>
+      <style>{KEYFRAMES}</style>
+
+      {/* Back card — peeks behind the front card */}
+      {slides.length > 1 && (
+        <div
+          className="absolute inset-0 overflow-hidden rounded-2xl"
+          style={{
+            ...CARD,
+            transform:     "translate(6px, 9px) scale(0.95)",
+            opacity:       0.65,
+            zIndex:        1,
+            pointerEvents: "none",
+          }}
+        >
+          <div className="flex flex-col gap-3 p-3.5">
+            <SlideContent slide={slides[backIdx]} status={status} />
+          </div>
+        </div>
+      )}
+
+      {/* Exiting card — flies off upward */}
+      {exitIdx !== null && (
+        <div
+          key={`exit-${exitIdx}`}
+          className="absolute inset-0 overflow-hidden rounded-2xl"
+          style={{
+            ...CARD,
+            zIndex:        3,
+            animation:     "card-leave 380ms ease-out forwards",
+            pointerEvents: "none",
+          }}
+        >
+          <div className="flex flex-col gap-3 p-3.5">
+            <SlideContent slide={slides[exitIdx % slides.length]} status={status} />
+          </div>
+        </div>
+      )}
+
+      {/* Front card — active, enters from slightly below */}
+      <div
+        key={`front-${safeIdx}`}
+        className="relative rounded-2xl"
+        style={{ ...CARD, zIndex: 2, animation: "card-enter 400ms ease-out" }}
+      >
+        <div className="flex flex-col gap-3 p-3.5">
+          <SlideContent slide={slides[safeIdx]} status={status} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Main component ─────────────────────────────────────────────────────────
 
@@ -171,67 +336,15 @@ export default function Activity({ userId }: { userId: string }) {
   const game   = activities.find((a) => a.type === 0);
   const custom = activities.find((a) => a.type === 4);
 
-  // ── Game: card below center of avatar ────────────────────────────────────
-  if (game) {
-    const imgUrl = activityImgUrl(game);
+  const slides: Slide[] = [];
+  if (game) slides.push({ kind: "game", activity: game });
+  if (listening_to_spotify && spotify) slides.push({ kind: "spotify", spotify });
+
+  // ── Activity deck (game / spotify / both) ─────────────────────────────────
+  if (slides.length > 0) {
     return (
-      <div
-        className="hidden lg:absolute lg:left-1/2 lg:top-full lg:mt-14 lg:flex lg:w-64 lg:flex-col lg:gap-3 lg:rounded-2xl lg:p-3.5 lg:-translate-x-1/2 lg:z-20"
-        style={CARD}
-      >
-        <header className="mb-2.5 flex items-center gap-2">
-          <Dot status={discord_status} />
-          <span className="text-xs font-semibold tracking-wide" style={{ color: STATUS_COLOR[discord_status] }}>
-            Playing
-          </span>
-        </header>
-
-        <div className="flex gap-2.5">
-          {imgUrl ? (
-            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md lg:h-12 lg:w-12 lg:rounded-lg">
-              <Image src={imgUrl} alt={game.assets?.large_text ?? game.name} fill unoptimized className="object-cover" />
-            </div>
-          ) : (
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-lg lg:h-12 lg:w-12 lg:rounded-lg lg:text-xl" style={{ backgroundColor: ctp.surface0 }}>
-              🎮
-            </div>
-          )}
-
-          <div className="flex min-w-0 flex-col justify-center gap-0.5">
-            <p className="truncate text-sm font-semibold" style={{ color: ctp.text }}>{game.name}</p>
-            {game.details && <p className="truncate text-xs" style={{ color: ctp.subtext1 }}>{game.details}</p>}
-            {game.timestamps?.start != null && (
-              <p className="text-xs" style={{ color: ctp.overlay1 }}>
-                <LiveElapsed start={game.timestamps.start} />
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Spotify: compact pill at bottom-right of avatar ───────────────────────
-  if (listening_to_spotify && spotify) {
-    return (
-      <div
-        className="hidden lg:absolute lg:flex lg:w-48 lg:flex-col lg:gap-2 lg:rounded-xl lg:p-2.5 lg:bottom-3 lg:right-3 lg:z-20"
-        style={CARD}
-      >
-        <div className="flex items-center gap-2">
-          <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md">
-            <Image src={spotify.album_art_url} alt={spotify.album} fill unoptimized className="object-cover" />
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-xs font-semibold leading-tight" style={{ color: ctp.text }}>
-              {spotify.song}
-            </p>
-            <p className="truncate text-xs leading-tight" style={{ color: ctp.overlay1 }}>
-              {spotify.artist}
-            </p>
-          </div>
-        </div>
-        <MiniSpotifyBar ts={spotify.timestamps} />
+      <div className="hidden lg:absolute lg:left-1/2 lg:top-full lg:mt-14 lg:block lg:-translate-x-1/2 lg:z-20">
+        <DeckCard slides={slides} status={discord_status} />
       </div>
     );
   }

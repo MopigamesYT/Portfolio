@@ -48,7 +48,7 @@ export default async function Hero({ t }: Props) {
             <a
               href="#projects"
               className="inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-opacity hover:opacity-80"
-              style={{ backgroundColor: ctp.mauve, color: ctp.base }}
+              style={{ backgroundColor: ctp.pink, color: ctp.base }}
             >
               {t.viewWork}
               <ArrowDownIcon className="h-4 w-4" />
@@ -148,7 +148,7 @@ export default async function Hero({ t }: Props) {
             {decoration && (
               <div
                 className="pointer-events-none absolute left-1/2 top-1/2 select-none"
-                style={{ width: "128%", height: "128%", transform: "translate(-50%, -50%)" }}
+                style={{ width: "120%", height: "120%", transform: "translate(-50%, -50%)" }}
               >
                 <Image src={decoration} alt="" fill unoptimized />
               </div>

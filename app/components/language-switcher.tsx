@@ -28,7 +28,7 @@ export default function LanguageSwitcher({ locale }: { locale: Locale }) {
           className="rounded-md px-2.5 py-1 text-xs font-semibold uppercase transition-all"
           style={
             locale === l
-              ? { backgroundColor: ctp.mauve, color: ctp.base }
+              ? { backgroundColor: ctp.pink, color: ctp.base }
               : { color: ctp.overlay1 }
           }
           aria-pressed={locale === l}
