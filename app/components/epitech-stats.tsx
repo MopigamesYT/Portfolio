@@ -1,5 +1,5 @@
 import SectionHeading from "./section-heading";
-import { fetchMoulifyResults, fetchMoulifyTepitechs, fetchMoulifyLogtime } from "../lib/moulify";
+import { fetchMoulifyResults, fetchMoulifyTepitechs, fetchMoulifyLogtime, fetchMoulifyGPA } from "../lib/moulify";
 import type { MoulifyResult, MoulifyLogtimeEntry } from "../lib/moulify";
 import type { Translations } from "../i18n/translations";
 import ctp from "../lib/ctp";
@@ -181,18 +181,14 @@ function LogtimeChart({
 // ── Main component ─────────────────────────────────────────────────────────
 
 export default async function EpitechStats({ t }: { t: T }) {
-  const [{ items, total }, tepitechs, logtime] = await Promise.all([
+  const [{ items, total }, tepitechs, logtime, gpa] = await Promise.all([
     fetchMoulifyResults(100),
     fetchMoulifyTepitechs(),
     fetchMoulifyLogtime(),
+    fetchMoulifyGPA(),
   ]);
 
   if (items.length === 0 && tepitechs.length === 0) return null;
-
-  const avgPct =
-    items.length > 0
-      ? Math.round(items.reduce((s, r) => s + r.percentage, 0) / items.length)
-      : null;
 
   const latestTepitech = tepitechs.at(-1) ?? null;
   const recent         = items.slice(0, 6);
@@ -211,11 +207,12 @@ export default async function EpitechStats({ t }: { t: T }) {
         {/* Stats row */}
         <div className="mt-16 grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard value={String(total)}  label={t.projectsDelivered} color={ctp.pink} />
-          {avgPct !== null && (
+          {gpa !== null && (
             <StatCard
-              value={`${avgPct}%`}
-              label={t.avgPassRate}
-              color={avgPct >= 70 ? ctp.green : avgPct >= 50 ? ctp.yellow : ctp.red}
+              value={gpa}
+              sub="/4.0"
+              label={t.gpa}
+              color={parseFloat(gpa) >= 3.0 ? ctp.green : parseFloat(gpa) >= 2.0 ? ctp.yellow : ctp.red}
             />
           )}
           {latestTepitech && (

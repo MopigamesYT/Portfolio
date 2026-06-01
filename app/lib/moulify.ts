@@ -93,6 +93,22 @@ export async function fetchMoulifyLogtime(): Promise<MoulifyLogtimeEntry[]> {
   }
 }
 
+export async function fetchMoulifyGPA(): Promise<string | null> {
+  try {
+    const headers = authHeaders();
+    if (!headers) return null;
+    const res = await fetch(`${BASE}/api/me/roadblocks`, {
+      headers,
+      next: { revalidate: REVALIDATE },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.roadblocks?.[0]?.student?.gpa as string) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchMoulifyTepitechs(): Promise<MoulifyTepitech[]> {
   try {
     const headers = authHeaders();
