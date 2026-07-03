@@ -1,6 +1,7 @@
 import SectionHeading from "./section-heading";
+import LogtimeChart from "./logtime-chart";
 import { fetchMoulifyResults, fetchMoulifyTepitechs, fetchMoulifyLogtime, fetchMoulifyGPA } from "../lib/moulify";
-import type { MoulifyResult, MoulifyLogtimeEntry } from "../lib/moulify";
+import type { MoulifyResult } from "../lib/moulify";
 import type { Translations } from "../i18n/translations";
 import ctp from "../lib/ctp";
 
@@ -99,79 +100,6 @@ function ResultCard({ result: r, t }: { result: MoulifyResult; t: Pick<T, "tests
             className="h-full rounded-full"
             style={{ width: `${r.percentage}%`, backgroundColor: color }}
           />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function LogtimeChart({
-  days,
-  t,
-}: {
-  days: MoulifyLogtimeEntry[];
-  t: Pick<T, "logtimeTitle" | "legendYou" | "legendPromo">;
-}) {
-  const max = Math.max(...days.flatMap((d) => [d.logTime, d.promoLogTime]), 1);
-  const BAR_H = 96;
-
-  return (
-    <div className="rounded-2xl p-6" style={{ backgroundColor: ctp.surface0 }}>
-      <p
-        className="mb-6 text-xs font-semibold uppercase tracking-[0.2em]"
-        style={{ color: ctp.overlay1 }}
-      >
-        {t.logtimeTitle}
-      </p>
-      <div className="flex gap-2">
-        {days.map((d) => {
-          const userH  = d.logTime      > 0 ? Math.max(Math.round((d.logTime      / max) * BAR_H), 4) : 0;
-          const promoH = d.promoLogTime > 0 ? Math.max(Math.round((d.promoLogTime / max) * BAR_H), 4) : 0;
-          const hours  = (d.logTime / 3600).toFixed(1);
-          const dayNum = new Date(d.date + "T12:00:00Z").getUTCDate().toString();
-
-          return (
-            <div
-              key={d.date}
-              className="flex flex-1 flex-col items-center gap-1"
-              title={`${d.date}: ${hours}h`}
-            >
-              {/* Hours above the pair */}
-              <span
-                className="text-[9px] leading-none"
-                style={{ color: ctp.subtext0, minHeight: "11px" }}
-              >
-                {d.logTime > 0 ? `${hours}h` : ""}
-              </span>
-
-              {/* Side-by-side bars */}
-              <div className="flex w-full items-end gap-0.5" style={{ height: BAR_H + "px" }}>
-                <div
-                  className="flex-1 rounded-sm"
-                  style={{ height: userH  > 0 ? userH  + "px" : "0", backgroundColor: ctp.sapphire }}
-                />
-                <div
-                  className="flex-1 rounded-sm"
-                  style={{ height: promoH > 0 ? promoH + "px" : "0", backgroundColor: ctp.lavender, opacity: 0.55 }}
-                />
-              </div>
-
-              {/* Day-of-month label */}
-              <span className="text-[9px] leading-none" style={{ color: ctp.overlay0 }}>
-                {dayNum}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-      <div className="mt-4 flex items-center gap-4">
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-sm" style={{ backgroundColor: ctp.sapphire }} />
-          <span className="text-xs" style={{ color: ctp.overlay1 }}>{t.legendYou}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-sm" style={{ backgroundColor: ctp.lavender, opacity: 0.55 }} />
-          <span className="text-xs" style={{ color: ctp.overlay1 }}>{t.legendPromo}</span>
         </div>
       </div>
     </div>
