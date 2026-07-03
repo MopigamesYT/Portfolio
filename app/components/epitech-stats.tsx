@@ -125,7 +125,9 @@ export default async function EpitechStats({ t }: { t: T }) {
     logtime.length > 0
       ? Math.round(logtime.reduce((s, e) => s + e.logTime, 0) / 3600)
       : null;
-  const last14 = logtime.slice(-14);
+  const last14 = logtime
+    .filter((d) => d.logTime > 0 || d.promoLogTime > 0)
+    .slice(-14);
 
   return (
     <section id="epitech" className="py-28" style={{ backgroundColor: ctp.base }}>
